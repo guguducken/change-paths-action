@@ -73,11 +73,11 @@ async function run() {
                 }
             }
             if (i != -1) {
-                path_ans += `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i) + `\r`;
+                path_ans += `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i) + `\n`;
             }
         }
         if (path_ans == ``) {
-            path_ans = `github.com` + `/` + owner + `/` + repo + `/` + `\r`;
+            path_ans = `github.com` + `/` + owner + `/` + repo + `/` + `\n`;
         }
 
 
