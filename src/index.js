@@ -9,7 +9,7 @@ const graphqlWithAuth = graphql.defaults({
     },
 });
 
-async function getPaths(repo, owner, num, sourceOwner) {
+async function getPaths(repo, owner, num) {
     core.info("-------------------- The goal paths --------------------");
     let pr_paths = await graphqlWithAuth(
         `
@@ -53,11 +53,11 @@ async function getPaths(repo, owner, num, sourceOwner) {
             }
         }
         if (i != -1) {
-            path_ans += `github.com` + `/` + sourceOwner + `/` + repo + `/` + element.substring(0, i) + ` `;
+            path_ans += `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i) + ` `;
         }
     }
     if (path_ans == ``) {
-        path_ans = `github.com` + `/` + sourceOwner + `/` + repo + `/` + ` `;
+        path_ans = `github.com` + `/` + owner + `/` + repo + `/` + ` `;
     }
 
 
@@ -111,11 +111,11 @@ async function run() {
         }
         core.info(`The target pull request id is: ` + num);
 
+        let path_ans = await getPaths(repo, owner, num);
+        core.setOutput('paths', path_ans.substring(0, path_ans.length) + `\n`);
+
         let sourceOwner = await getSourceOwner(repo, owner, num);
         core.setOutput('resource', sourceOwner + `/` + repo);
-
-        let path_ans = await getPaths(repo, owner, num, sourceOwner);
-        core.setOutput('paths', path_ans.substring(0, path_ans.length) + `\n`);
 
     } catch (err) {
         core.setFailed(err.message);
