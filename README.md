@@ -1,15 +1,15 @@
-#Get Changed Paths of New PR
+# Get Changed Paths of New PR
 This action detects the farthest path of the modified file in PR
 
-##Usage
+## Usage
 Create a workflow .yml file in your repositories .github/workflows directory.
-###inputs
+### inputs
 GitHub Personal Token
 
-###outputs
+### outputs
 The paths which file changed in this PR
 
-##Examples
+## Examples
 
 ~~~yaml
 on:
