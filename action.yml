@@ -12,6 +12,8 @@ outputs:
     description: 'The paths of this PR changed'
   resource:
     description: 'The source repository of this PR'
+  branch:
+    description: 'The branch of this PR'
 
 runs:
   using: 'node16'
