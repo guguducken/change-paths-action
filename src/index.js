@@ -94,7 +94,7 @@ async function getSourceOwner(repo, owner, num) {
 
     const branch = re1.exec(str)[1];
 
-    return re.exec(str)[1] + `/` + repo + `@` + branch;
+    return re.exec(str)[1] + `/` + repo + `/tree/` + branch;
 }
 
 
