@@ -1,0 +1,16 @@
+name: Get Change Paths
+description: Get the Changed Path of New PR
+author: guguducken
+
+inputs:
+  github-token:
+    description: 'The user GitHub token for get data'
+    required: true
+
+outputs:
+  paths:
+    description: 'The paths of this PR changed'
+
+runs:
+  using: 'node16'
+  main: 'src/index.js'
