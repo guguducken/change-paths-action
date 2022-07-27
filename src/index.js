@@ -75,6 +75,7 @@ async function getSourceOwner(repo, owner, num) {
                         author {
                             login
                         }
+                        headRefName
                     }
                 }
             }
@@ -89,7 +90,11 @@ async function getSourceOwner(repo, owner, num) {
 
     const re = /\{"login":"(.+?)"\}/igm;
 
-    return re.exec(str)[1];
+    const re1 = /"headRefName":"(.+?)"/igm;
+
+    const branch = re1.exec(str)[1];
+
+    return re.exec(str)[1] + `@` + branch;
 }
 
 
