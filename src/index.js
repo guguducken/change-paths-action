@@ -3,6 +3,94 @@ const github = require('@actions/github');
 const { graphql } = require("@octokit/graphql");
 
 const accessToken = core.getInput('github-token');
+const graphqlWithAuth = graphql.defaults({
+    headers: {
+        authorization: `bearer ` + accessToken,
+    },
+});
+
+async function getPaths(repo, owner, num) {
+    core.info("-------------------- The goal paths --------------------");
+    let pr_paths = await graphqlWithAuth(
+        `
+            query prPaths($owner_name: String!, $repo_name: String!,$id_pr: Int!, $lnum: Int = 100){
+                repository(name: $repo_name, owner: $owner_name) {
+                    pullRequest(number: $id_pr) {
+                        files(first: $lnum) {
+                            edges {
+                                node {
+                                    path
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+        {
+            repo_name: repo,
+            owner_name: owner,
+            id_pr: num,
+
+        });
+    const str = JSON.stringify(pr_paths)
+
+    const re = /\{"path":"(.+?)"\}\}/igm;
+    let path_re = [];
+    let res = re.exec(str);
+    while (res) {
+        path_re.push(res[1]);
+        res = re.exec(str);
+    }
+
+    let path_ans = ``;
+    for (let index = 0; index < path_re.length; index++) {
+        let element = path_re[index];
+        let i = element.length - 1
+        for (; i >= 0; i--) {
+            if (element[i] == '/') {
+                break
+            }
+        }
+        if (i != -1) {
+            path_ans += `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i) + ` `;
+        }
+    }
+    if (path_ans == ``) {
+        path_ans = `github.com` + `/` + owner + `/` + repo + `/` + ` `;
+    }
+
+
+    core.info(path_ans);
+    core.info("-------------------- End find paths --------------------");
+    return path_ans
+}
+
+async function getSourceOwner(repo, owner, num) {
+    let source = await graphqlWithAuth(
+        `
+            query prSource($owner_name: String!, $repo_name: String!,$id_pr: Int!){
+                repository(name: $repo_name, owner: $owner_name) {
+                    pullRequest(number: $id_pr) {
+                        author {
+                            login
+                        }
+                    }
+                }
+            }
+        `,
+        {
+            repo_name: repo,
+            owner_name: owner,
+            id_pr: num,
+
+        });
+    const str = JSON.stringify(source);
+
+    const re = /\{"login":"(.+?)"\}/igm;
+
+    return re.exec(str)[1];
+}
 
 
 async function run() {
@@ -22,68 +110,13 @@ async function run() {
             return
         }
         core.info(`The target pull request id is: ` + num);
-        core.info("-------------------- The goal paths --------------------");
 
-
-        const graphqlWithAuth = graphql.defaults({
-            headers: {
-                authorization: `bearer ` + accessToken,
-            },
-        });
-        var pr_paths = await graphqlWithAuth(
-            `
-            query prPaths($owner_name: String!, $repo_name: String!,$id_pr: Int!, $lnum: Int = 100){
-                repository(name: $repo_name, owner: $owner_name) {
-                    pullRequest(number: $id_pr) {
-                        files(first: $lnum) {
-                            edges {
-                                node {
-                                    path
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        `,
-            {
-                repo_name: repo,
-                owner_name: owner,
-                id_pr: num,
-
-            });
-        const str = JSON.stringify(pr_paths)
-
-        const re = /\{"path":"(.+?)"\}\}/igm;
-        let path_re = [];
-        let res = re.exec(str);
-        while (res) {
-            let [big, small] = res;
-            path_re.push(small);
-            res = re.exec(str);
-        }
-
-        var path_ans = ``;
-        for (let index = 0; index < path_re.length; index++) {
-            let element = path_re[index];
-            let i = element.length - 1
-            for (; i >= 0; i--) {
-                if (element[i] == '/') {
-                    break
-                }
-            }
-            if (i != -1) {
-                path_ans += `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i) + ` `;
-            }
-        }
-        if (path_ans == ``) {
-            path_ans = `github.com` + `/` + owner + `/` + repo + `/` + ` `;
-        }
-
-
-        core.info(path_ans);
-        core.info("-------------------- End find paths --------------------");
+        let path_ans = await getPaths(repo, owner, num);
         core.setOutput('paths', path_ans.substring(0, path_ans.length) + `\n`);
+
+        let sourceOwner = await getSourceOwner(repo, owner, num);
+        core.setOutput(resource, sourceOwner + `/` + repo);
+
     } catch (err) {
         core.setFailed(err.message);
     }

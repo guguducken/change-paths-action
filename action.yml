@@ -10,6 +10,8 @@ inputs:
 outputs:
   paths:
     description: 'The paths of this PR changed'
+  resource:
+    description: 'The source repository of this PR'
 
 runs:
   using: 'node16'
