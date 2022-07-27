@@ -94,7 +94,7 @@ async function getSourceOwner(repo, owner, num) {
 
     const branch = re1.exec(str)[1];
 
-    return re.exec(str)[1] + `@` + branch;
+    return re.exec(str)[1] + `/` + repo + `@` + branch;
 }
 
 
@@ -119,8 +119,8 @@ async function run() {
         let path_ans = await getPaths(repo, owner, num);
         core.setOutput('paths', path_ans.substring(0, path_ans.length) + `\n`);
 
-        let sourceOwner = await getSourceOwner(repo, owner, num);
-        core.setOutput('resource', sourceOwner + `/` + repo);
+        let sourceRepo = await getSourceOwner(repo, owner, num);
+        core.setOutput('resource', sourceRepo);
 
     } catch (err) {
         core.setFailed(err.message);
