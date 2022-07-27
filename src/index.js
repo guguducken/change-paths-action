@@ -115,7 +115,7 @@ async function run() {
         core.setOutput('paths', path_ans.substring(0, path_ans.length) + `\n`);
 
         let sourceOwner = await getSourceOwner(repo, owner, num);
-        core.setOutput(resource, sourceOwner + `/` + repo);
+        core.setOutput('resource', sourceOwner + `/` + repo);
 
     } catch (err) {
         core.setFailed(err.message);
