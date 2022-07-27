@@ -74,12 +74,12 @@ async function run() {
             }
             if (i != -1) {
                 // path_ans += `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i) + `\n`;
-                path_ans += `./` + element.substring(0, i) + `\n`;
+                path_ans += `./` + element.substring(0, i) + ` `;
             }
         }
         if (path_ans == ``) {
             // path_ans = `github.com` + `/` + owner + `/` + repo + `/` + `\n`;
-            path_ans = `./` + `\n`;
+            path_ans = `./` + ` `;
         }
 
 
