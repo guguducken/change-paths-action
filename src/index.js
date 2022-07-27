@@ -92,7 +92,7 @@ async function getSourceOwner(repo, owner, num) {
 
     const re1 = /"headRefName":"(.+?)"/igm;
 
-    return re.exec(str)[1] + `/` + repo, re1.exec(str)[1];
+    return [re.exec(str)[1] + `/` + repo, re1.exec(str)[1]];
 }
 
 
@@ -117,7 +117,7 @@ async function run() {
         let path_ans = await getPaths(repo, owner, num);
         core.setOutput('paths', path_ans.substring(0, path_ans.length) + `\n`);
 
-        let sourceRepo, sourceBranch = await getSourceOwner(repo, owner, num);
+        let [sourceRepo, sourceBranch] = await getSourceOwner(repo, owner, num);
         core.setOutput('resource', sourceRepo);
         core.setOutput('branch', sourceBranch);
 
