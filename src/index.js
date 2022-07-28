@@ -76,7 +76,7 @@ async function getPaths(repo, owner, num) {
 
     let path_ans = "";
     for (let index = 0; index < paths_set.length; index++) {
-        const path = paths_set[index];
+        let path = paths_set[index];
         // if (index != paths_set.length - 1) {
         //     path_ans += path + ' ';
         // } else {
