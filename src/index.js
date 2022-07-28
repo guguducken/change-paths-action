@@ -74,16 +74,8 @@ async function getPaths(repo, owner, num) {
 
     core.info(Array.from(paths_set));
 
-    let path_ans = "";
-    for (let index = 0; index < paths_set.length; index++) {
-        let path = paths_set[index];
-        // if (index != paths_set.length - 1) {
-        //     path_ans += path + ' ';
-        // } else {
-        //     path_ans += path;
-        // }
-        path_ans += path + ' ';
-    }
+
+    let path_ans = Array.from(paths_set).join(" ");
 
     core.info(path_ans);
     core.info("-------------------- End find paths --------------------");
