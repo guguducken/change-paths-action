@@ -74,14 +74,15 @@ async function getPaths(repo, owner, num) {
 
     core.info(Array.from(paths_set));
 
-    let path_ans = ``;
+    let path_ans = "";
     for (let index = 0; index < paths_set.length; index++) {
         const path = paths_set[index];
-        if (index != paths_set.length - 1) {
-            path_ans += path + ' ';
-        } else {
-            path_ans += path;
-        }
+        // if (index != paths_set.length - 1) {
+        //     path_ans += path + ' ';
+        // } else {
+        //     path_ans += path;
+        // }
+        path_ans += path + ' ';
     }
 
     core.info(path_ans);
@@ -192,7 +193,7 @@ async function run() {
         core.info(`The target pull request id is: ` + num);
 
         let path_ans = await getPaths(repo, owner, num);
-        core.setOutput('paths', path_ans.substring(0, path_ans.length) + `\n`);
+        core.setOutput('paths', path_ans.substring(0, path_ans.length));
 
         let [sourceRepo, sourceBranch] = await getSourceOwner(repo, owner, num);
         core.setOutput('resource', sourceRepo);
