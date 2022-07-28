@@ -3,15 +3,19 @@ const github = require('@actions/github');
 const { graphql } = require("@octokit/graphql");
 
 const accessToken = core.getInput('github-token');
+const ignoreStr = JSON.stringify(core.getInput('ignore'));
+
 const graphqlWithAuth = graphql.defaults({
     headers: {
         authorization: `bearer ` + accessToken,
     },
 });
 
+let ignoreRoot = false;
+
 async function getPaths(repo, owner, num) {
     core.info("-------------------- The goal paths --------------------");
-    let pr_paths = await graphqlWithAuth(
+    let paths_pr = await graphqlWithAuth(
         `
             query prPaths($owner_name: String!, $repo_name: String!,$id_pr: Int!, $lnum: Int = 100){
                 repository(name: $repo_name, owner: $owner_name) {
@@ -33,7 +37,7 @@ async function getPaths(repo, owner, num) {
             id_pr: num,
 
         });
-    const str = JSON.stringify(pr_paths)
+    const str = JSON.stringify(paths_pr)
 
     const re = /\{"path":"(.+?)"\}\}/igm;
     let path_re = [];
@@ -43,23 +47,40 @@ async function getPaths(repo, owner, num) {
         res = re.exec(str);
     }
 
-    let path_ans = ``;
+    const igRes = getIgnorePathRe(ignoreStr);
+
+
+    let paths_set = new Set();
     for (let index = 0; index < path_re.length; index++) {
         let element = path_re[index];
-        let i = element.length - 1
+        let i = element.length - 1;
         for (; i >= 0; i--) {
             if (element[i] == '/') {
                 break
             }
         }
         if (i != -1) {
-            path_ans += `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i) + ` `;
+            let t = `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i);
+            if (ignoreCheck(igRes, t)) {
+                continue
+            }
+            paths_set.add(t);
+        } else {
+            if (!ignoreRoot) {
+                paths_set.add(`github.com` + `/` + owner + `/` + repo);
+            }
         }
     }
-    if (path_ans == ``) {
-        path_ans = `github.com` + `/` + owner + `/` + repo + `/` + ` `;
-    }
 
+    let path_ans = ``;
+    for (let index = 0; index < paths_set.length; index++) {
+        const path = paths_set[index];
+        if (index != paths_set.length - 1) {
+            path_ans += path + ' ';
+        } else {
+            path_ans += path;
+        }
+    }
 
     core.info(path_ans);
     core.info("-------------------- End find paths --------------------");
@@ -93,6 +114,60 @@ async function getSourceOwner(repo, owner, num) {
     const re1 = /"headRefName":"(.+?)"/igm;
 
     return [re.exec(str)[1] + `/` + repo, re1.exec(str)[1]];
+}
+
+async function reParse(str) {
+    let ans = "";
+    for (let index = 0; index < str.length; index++) {
+        const e = str[index];
+        if (e == "/" || e == "{" || e == "}" || e == "[" || e == "]" ||
+            e == "(" || e == ")" || e == "^" || e == "$" || e == "+" ||
+            e == "\\" || e == "." || e == "*" || e == "|" || e == "?") {
+            ans += "\\";
+        }
+        ans += e;
+    }
+    return ans
+}
+
+async function getIgnorePathRe(str) {
+    if (str.length == 0) {
+        return undefined
+    }
+    let ans = new Set();
+    let t = "";
+    for (let index = 0; index < str.length; index++) {
+        const e = str[index];
+        if (e == ",") {
+            if (t != '/') {
+                if (t.length >= 1) {
+                    ans.add(new RegExp(reParse(t), "igm"));
+                }
+            } else {
+                ignoreRoot = true;
+            }
+            t = "";
+        } else {
+            t += e;
+        }
+    }
+    if (ans.length == 0) {
+        return undefined
+    }
+    return ans;
+}
+
+async function ignoreCheck(igRes, str) {
+    if (igRes == undefined) {
+        return false;
+    }
+    for (let index = 0; index < igRes.length; index++) {
+        const re = igRes[index];
+        if (re.test(str)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 

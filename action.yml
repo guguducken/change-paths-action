@@ -6,6 +6,8 @@ inputs:
   github-token:
     description: 'The user GitHub token for get data'
     required: true
+  ignore:
+    description: 'The ignore path in this PR'
 
 outputs:
   paths:
