@@ -124,7 +124,7 @@ async function reParse(str) {
 }
 
 async function getIgnorePathRe(str) {
-    if (str.length == 0) {
+    if (str == "") {
         return undefined
     }
     let ans = new Set();
@@ -134,7 +134,7 @@ async function getIgnorePathRe(str) {
         if (e == ",") {
             if (t != '/') {
                 if (t.length >= 1) {
-                    ans.add(new RegExp(reParse(t), "igm"));
+                    ans.add(t);
                 }
             } else {
                 ignoreRoot = true;
@@ -144,10 +144,14 @@ async function getIgnorePathRe(str) {
             t += e;
         }
     }
-    if (ans.length == 0) {
+    if (ans.size == 0) {
         return undefined
     }
-    return Array.from(ans);
+    let ans_re = new Array();
+    for (const item of ans) {
+        ans_re.push(new RegExp(reParse(item), "igm"));
+    }
+    return ans_re;
 }
 
 function ignoreCheck(igRes, str) {
