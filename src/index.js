@@ -123,13 +123,13 @@ async function reParse(str) {
 
 async function getIgnorePathRe(str) {
     if (str == "") {
-        return undefined
+        return null
     }
     let ans = new Set();
     let t = "";
     for (let index = 1; index < str.length - 1; index++) {
         const e = str[index];
-        if (e == ",") {
+        if (e == "," || index == str.length - 2) {
             if (t != '/') {
                 if (t.length >= 1) {
                     ans.add(t);
@@ -142,22 +142,19 @@ async function getIgnorePathRe(str) {
             t += e;
         }
     }
-    if (t != "") {
-        ans.add(t);
-    }
     if (ans.size == 0) {
-        return undefined
+        return null
     }
     core.info(Array.from(ans));
     let ans_re = new Array();
-    for (const item of ans) {
+    for (let item of Array.from(ans)) {
         ans_re.push(new RegExp(reParse(item), "igm"));
     }
     return ans_re;
 }
 
 function ignoreCheck(igRes, str) {
-    if (igRes == undefined) {
+    if (igRes == null) {
         return false;
     }
     for (let index = 0; index < igRes.length; index++) {
