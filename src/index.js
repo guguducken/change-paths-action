@@ -72,9 +72,6 @@ async function getPaths(repo, owner, num) {
         }
     }
 
-    core.info(Array.from(paths_set));
-
-
     let path_ans = Array.from(paths_set).join(" ");
 
     core.info(path_ans);
@@ -149,7 +146,7 @@ async function getIgnorePathRe(str) {
     if (ans.length == 0) {
         return undefined
     }
-    return ans;
+    return Array.from(ans);
 }
 
 function ignoreCheck(igRes, str) {
