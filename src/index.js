@@ -47,7 +47,7 @@ async function getPaths(repo, owner, num) {
         res = re.exec(str);
     }
 
-    const igRes = getIgnorePathRe(ignoreStr);
+    const igRes = await getIgnorePathRe(ignoreStr);
 
 
     let paths_set = new Set();
@@ -157,7 +157,7 @@ async function getIgnorePathRe(str) {
     return ans;
 }
 
-async function ignoreCheck(igRes, str) {
+function ignoreCheck(igRes, str) {
     if (igRes == undefined) {
         return false;
     }
