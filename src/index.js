@@ -47,10 +47,7 @@ async function getPaths(repo, owner, num) {
         res = re.exec(str);
     }
 
-    core.info(ignoreStr[0]);
     const igRes = await getIgnorePathRe(ignoreStr);
-
-    core.info(igRes.toString());
 
     let paths_set = new Set();
     for (let index = 0; index < path_re.length; index++) {
@@ -130,7 +127,7 @@ async function getIgnorePathRe(str) {
     }
     let ans = new Set();
     let t = "";
-    for (let index = 0; index < str.length; index++) {
+    for (let index = 1; index < str.length - 1; index++) {
         const e = str[index];
         if (e == ",") {
             if (t != '/') {
@@ -153,7 +150,7 @@ async function getIgnorePathRe(str) {
     }
     core.info(Array.from(ans));
     let ans_re = new Array();
-    for (const item of Array.from(ans)) {
+    for (const item of ans) {
         ans_re.push(new RegExp(reParse(item), "igm"));
     }
     return ans_re;
