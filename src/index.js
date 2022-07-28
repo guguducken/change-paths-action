@@ -49,6 +49,7 @@ async function getPaths(repo, owner, num) {
 
     const igRes = await getIgnorePathRe(ignoreStr);
 
+    core.info(igRes);
 
     let paths_set = new Set();
     for (let index = 0; index < path_re.length; index++) {
