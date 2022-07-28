@@ -147,8 +147,9 @@ async function getIgnorePathRe(str) {
     if (ans.size == 0) {
         return undefined
     }
+    core.info(Array.from(ans));
     let ans_re = new Array();
-    for (const item of ans) {
+    for (const item of Array.from(ans)) {
         ans_re.push(new RegExp(reParse(item), "igm"));
     }
     return ans_re;
