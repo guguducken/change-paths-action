@@ -72,6 +72,8 @@ async function getPaths(repo, owner, num) {
         }
     }
 
+    core.info(Array.from(paths_set));
+
     let path_ans = ``;
     for (let index = 0; index < paths_set.length; index++) {
         const path = paths_set[index];
