@@ -49,6 +49,10 @@ async function getPaths(repo, owner, num) {
 
     const igRes = await getIgnorePathRe(ignoreStr);
 
+    if (ignoreRoot) {
+        core.info("Ignore the root path");
+    }
+
     let paths_set = new Set();
     for (let index = 0; index < path_re.length; index++) {
         let element = path_re[index];
@@ -61,6 +65,7 @@ async function getPaths(repo, owner, num) {
         if (i != -1) {
             let t = `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i);
             if (ignoreCheck(igRes, t)) {
+                core.info("The Ignore path: " + t);
                 continue
             }
             paths_set.add(t);
@@ -70,6 +75,8 @@ async function getPaths(repo, owner, num) {
             }
         }
     }
+
+
 
     let path_ans = Array.from(paths_set).join(" ");
 
@@ -151,7 +158,6 @@ async function getIgnorePathRe(str) {
     core.info(Array.from(ans));
     let ans_re = new Array();
     for (let item of Array.from(ans)) {
-        core.info((new RegExp(await reParse(item), "igm")).toString());
         ans_re.push(new RegExp((await reParse(item)), "igm"));
     }
     return ans_re;
