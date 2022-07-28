@@ -47,6 +47,7 @@ async function getPaths(repo, owner, num) {
         res = re.exec(str);
     }
 
+    core.info(ignoreStr);
     const igRes = await getIgnorePathRe(ignoreStr);
 
     core.info(igRes.toString());
@@ -143,6 +144,9 @@ async function getIgnorePathRe(str) {
         } else {
             t += e;
         }
+    }
+    if (t != "") {
+        ans.add(t);
     }
     if (ans.size == 0) {
         return undefined
