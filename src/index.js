@@ -81,11 +81,12 @@ async function getPaths(repo, owner, num) {
     }
 
     core.info("-------------------- The goal paths --------------------");
-
+    for (const it of paths_set) {
+        core.info("Goal path: " + it);
+    }
     let path_ans = Array.from(paths_set).join(" ");
 
-    core.info(path_ans);
-    core.info("-------------------- End find paths --------------------");
+
     return path_ans
 }
 
@@ -207,7 +208,7 @@ async function run() {
         let [sourceRepo, sourceBranch] = await getSourceOwner(repo, owner, num);
         core.setOutput('resource', sourceRepo);
         core.setOutput('branch', sourceBranch);
-
+        core.info("-------------------- End find paths --------------------");
     } catch (err) {
         core.setFailed(err.message);
     }
