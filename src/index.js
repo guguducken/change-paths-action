@@ -168,7 +168,7 @@ function ignoreCheck(igRes, str) {
     }
     for (let index = 0; index < igRes.length; index++) {
         const re = igRes[index];
-        if (re.test(str)) {
+        if (re.test(str) && re.lastIndex == str.length) {
             return true;
         }
     }
