@@ -139,6 +139,9 @@ async function getIgnorePathRe(str) {
         if (e == ",") {
             if (t != '/') {
                 if (t.length >= 1) {
+                    if (t[t.length - 1] == '/') {
+                        t = t.substring(0, t.length - 1);
+                    }
                     ans.add(t);
                 }
             } else {
