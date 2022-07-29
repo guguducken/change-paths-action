@@ -14,7 +14,6 @@ const graphqlWithAuth = graphql.defaults({
 let ignoreRoot = false;
 
 async function getPaths(repo, owner, num) {
-    core.info("-------------------- The goal paths --------------------");
     let paths_pr = await graphqlWithAuth(
         `
             query prPaths($owner_name: String!, $repo_name: String!,$id_pr: Int!, $lnum: Int = 100){
@@ -49,8 +48,13 @@ async function getPaths(repo, owner, num) {
 
     const igRes = await getIgnorePathRe(ignoreStr);
 
+    if (ignoreStr != "") {
+        core.info("--------------------The ignore paths--------------------");
+    }
+
+
     if (ignoreRoot) {
-        core.info("Ignore the root path");
+        core.info("Ignore path: /");
     }
 
     let paths_set = new Set();
@@ -65,7 +69,7 @@ async function getPaths(repo, owner, num) {
         if (i != -1) {
             let t = `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i);
             if (ignoreCheck(igRes, t)) {
-                core.info("The Ignore path: " + t);
+                core.info("Ignore path: " + t);
                 continue
             }
             paths_set.add(t);
@@ -76,7 +80,7 @@ async function getPaths(repo, owner, num) {
         }
     }
 
-
+    core.info("-------------------- The goal paths --------------------");
 
     let path_ans = Array.from(paths_set).join(" ");
 
