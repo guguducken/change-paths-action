@@ -187,7 +187,7 @@ async function getIgnorePathRe(str) {
     }
 
     let ans_re = [];
-    for (let item of Array.from(ans)) {
+    for (const item of Array.from(ans)) {
         ans_re.push(
             {
                 fullIgnore: ignore_set.has(item),
