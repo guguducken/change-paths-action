@@ -145,11 +145,11 @@ async function getIgnorePathRe(str) {
     let ans = new Set();
     let m = new Map();
     let t = "";
-    for (let index = 1; index < str.length - 1; index++) {
+    for (let index = 0; index < str.length - 1; index++) {
         const e = str[index];
         if (e == ",") {
-            if (t != '/') {
-                if (t.length >= 1) {
+            if (t.length >= 1) {
+                if (t != "/") {
                     if (t[t.length - 1] == '/') {
                         t = t.substring(0, t.length - 1);
                         if (t == '/') {
@@ -160,20 +160,20 @@ async function getIgnorePathRe(str) {
                         m.set(t, false);
                     }
                     ans.add(t);
+                } else {
+                    ignoreRoot = true;
                 }
-            } else {
-                ignoreRoot = true;
             }
             t = "";
         } else {
             t += e;
         }
     }
-    if (t != "/") {
-        if (t.length >= 1) {
-            if (t[t.length - 1] == "/") {
+    if (t.length >= 1) {
+        if (t != "/") {
+            if (t[t.length - 1] == '/') {
                 t = t.substring(0, t.length - 1);
-                if (t == "/") {
+                if (t == '/') {
                     return null;
                 }
                 m.set(t, true);
@@ -181,9 +181,9 @@ async function getIgnorePathRe(str) {
                 m.set(t, false);
             }
             ans.add(t);
+        } else {
+            ignoreRoot = true;
         }
-    } else {
-        ignoreRoot = true;
     }
 
     if (ans.size == 0) {
@@ -191,7 +191,7 @@ async function getIgnorePathRe(str) {
     }
     let ans_re = new Array();
     for (let item of Array.from(ans)) {
-        ans_re.push({ re: (new RegExp((await reParse(item)), "igm")), full: m.get(item) });
+        ans_re.push({ re: new RegExp((await reParse(item)), "igm"), full: m.get(item) });
     }
     return ans_re;
 }
@@ -201,9 +201,9 @@ function ignoreCheck(igRes, str) {
         return false;
     }
     for (let index = 0; index < igRes.length; index++) {
-        const it = igRes[index];
-        if (it.re.test(str)) {
-            if (it.full || it.re.lastIndex == str.length) {
+        let { re, full } = igRes[index];
+        if (re.test(str)) {
+            if (full || re.lastIndex == str.length) {
                 return true;
             }
         }
