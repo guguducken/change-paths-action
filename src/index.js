@@ -143,7 +143,7 @@ async function getIgnorePathRe(str) {
         return undefined
     }
     let ans = new Set();
-    let m = new Map();
+    let m = new Set();
     let t = "";
     for (let index = 1; index < str.length - 1; index++) {
         const e = str[index];
@@ -155,9 +155,7 @@ async function getIgnorePathRe(str) {
                         if (t == '/') {
                             return null;
                         }
-                        m.set(t, true);
-                    } else {
-                        m.set(t, false);
+                        m.add(t);
                     }
                     ans.add(t);
                 } else {
@@ -176,9 +174,7 @@ async function getIgnorePathRe(str) {
                 if (t == '/') {
                     return null;
                 }
-                m.set(t, true);
-            } else {
-                m.set(t, false);
+                m.add(t);
             }
             ans.add(t);
         } else {
@@ -192,9 +188,8 @@ async function getIgnorePathRe(str) {
 
     let ans_re = new Array();
     for (let item of Array.from(ans)) {
-        let flag = await m.get(item)
         ans_re.push({
-            fullIgnore: flag,
+            fullIgnore: m.has(item),
             re: new RegExp((await reParse(item)), "igm"),
         });
     }
