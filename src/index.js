@@ -138,7 +138,7 @@ async function reParse(str) {
     return ans
 }
 
-async function getIgnorePathRe(str) {
+function getIgnorePathRe(str) {
     if (str == "") {
         return undefined
     }
@@ -191,7 +191,7 @@ async function getIgnorePathRe(str) {
         let temp = new Object();
         temp.re = new RegExp((await reParse(item)), "igm");
         temp.fullIgnore = m.has(item);
-        core.info(temp.toString());
+        core.info(temp.fullIgnore);
         ans_re.push(temp);
         // ans_re.push({
         //     fullIgnore: m.has(item),
