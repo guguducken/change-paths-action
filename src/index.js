@@ -48,7 +48,12 @@ async function getPaths(repo, owner, num) {
 
     const igRes = await getIgnorePathRe(ignoreStr);
 
-    if (ignoreStr != "") {
+    if (igRes === null) {
+        core.info("Ignore ALL paths!!!!!!!!!!!!!!");
+        return ""
+    }
+
+    if (ignoreStr !== undefined) {
         core.info("--------------------The ignore paths--------------------");
     }
 
@@ -135,7 +140,7 @@ async function reParse(str) {
 
 async function getIgnorePathRe(str) {
     if (str == "") {
-        return null
+        return undefined
     }
     let ans = new Set();
     let m = new Map();
@@ -147,6 +152,9 @@ async function getIgnorePathRe(str) {
                 if (t.length >= 1) {
                     if (t[t.length - 1] == '/') {
                         t = t.substring(0, t.length - 1);
+                        if (t == '/') {
+                            return null;
+                        }
                         m.set(t, true);
                     } else {
                         m.set(t, false);
@@ -161,11 +169,25 @@ async function getIgnorePathRe(str) {
             t += e;
         }
     }
-    if (t != "") {
-        ans.add(t);
+    if (t != "/") {
+        if (t.length >= 1) {
+            if (t[t.length - 1] == "/") {
+                t = t.substring(0, t.length - 1);
+                if (t == "/") {
+                    return null;
+                }
+                m.set(t, true);
+            } else {
+                m.set(t, false);
+            }
+            ans.add(t);
+        }
+    } else {
+        ignoreRoot = true;
     }
+
     if (ans.size == 0) {
-        return null
+        return undefined
     }
     let ans_re = new Array();
     for (let item of Array.from(ans)) {
@@ -175,7 +197,7 @@ async function getIgnorePathRe(str) {
 }
 
 function ignoreCheck(igRes, str) {
-    if (igRes == null) {
+    if (igRes === undefined) {
         return false;
     }
     for (let index = 0; index < igRes.length; index++) {
