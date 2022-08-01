@@ -53,7 +53,9 @@ async function getPaths(repo, owner, num) {
         return ""
     }
 
-    core.info("igRes:" + Array.from(igRes));
+    for (const it_t of igRes) {
+        core.info(it_t.re.toString() + it_t.fullIgnore);
+    }
     if (ignoreStr !== undefined) {
         core.info("--------------------The ignore paths--------------------");
     }
