@@ -13,8 +13,8 @@ const graphqlWithAuth = graphql.defaults({
 
 let ignoreRoot = false;
 
-async function getPaths(repo, owner, num) {
-    let paths_pr = await graphqlWithAuth(
+function getPaths(repo, owner, num) {
+    let paths_pr = graphqlWithAuth(
         `
             query prPaths($owner_name: String!, $repo_name: String!,$id_pr: Int!, $lnum: Int = 100){
                 repository(name: $repo_name, owner: $owner_name) {
@@ -46,7 +46,7 @@ async function getPaths(repo, owner, num) {
         res = re.exec(str);
     }
 
-    const igRes = await getIgnorePathRe(ignoreStr);
+    const igRes = getIgnorePathRe(ignoreStr);
 
     if (igRes === null) {
         core.info("Ignore ALL paths!!!!!!!!!!!!!!");
@@ -95,8 +95,8 @@ async function getPaths(repo, owner, num) {
     return path_ans
 }
 
-async function getSourceOwner(repo, owner, num) {
-    let source = await graphqlWithAuth(
+function getSourceOwner(repo, owner, num) {
+    let source = graphqlWithAuth(
         `
             query prSource($owner_name: String!, $repo_name: String!,$id_pr: Int!){
                 repository(name: $repo_name, owner: $owner_name) {
@@ -124,7 +124,7 @@ async function getSourceOwner(repo, owner, num) {
     return [re.exec(str)[1] + `/` + repo, re1.exec(str)[1]];
 }
 
-async function reParse(str) {
+function reParse(str) {
     let ans = "";
     for (let index = 0; index < str.length; index++) {
         const e = str[index];
@@ -138,7 +138,7 @@ async function reParse(str) {
     return ans
 }
 
-async function getIgnorePathRe(str) {
+function getIgnorePathRe(str) {
     if (str == "") {
         return undefined
     }
@@ -188,11 +188,13 @@ async function getIgnorePathRe(str) {
 
     let ans_re = [];
     for (let item of Array.from(ans)) {
-        let obj = {
-            fullIgnore: m.has(item),
-            re: new RegExp((await reParse(item)), "igm"),
-        }
-        ans_re.push(obj);
+        ans_re.push(
+            {
+                // fullIgnore: m.has(item),
+                fullIgnore: m.has(item),
+                re: new RegExp((reParse(item)), "igm"),
+            }
+        );
     }
 
     for (const it of ans_re) {
@@ -217,7 +219,7 @@ function ignoreCheck(igRes, str) {
 }
 
 
-async function run() {
+function run() {
     try {
 
         core.info("--------------------Start find paths--------------------");
@@ -235,10 +237,10 @@ async function run() {
         }
         core.info(`The target pull request id is: ` + num);
 
-        let path_ans = await getPaths(repo, owner, num);
+        let path_ans = getPaths(repo, owner, num);
         core.setOutput('paths', path_ans.substring(0, path_ans.length));
 
-        let [sourceRepo, sourceBranch] = await getSourceOwner(repo, owner, num);
+        let [sourceRepo, sourceBranch] = getSourceOwner(repo, owner, num);
         core.setOutput('resource', sourceRepo);
         core.setOutput('branch', sourceBranch);
         core.info("-------------------- End find paths --------------------");
