@@ -202,7 +202,7 @@ async function getIgnorePathRe(str) {
     }
 
     for (const it of ans_re) {
-        core.info(it.re.toString(), "  ", it.fullIgnore);
+        core.info(it.re.toString(), "  ", it[1]);
     }
     return ans_re;
 }
