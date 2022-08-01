@@ -191,6 +191,7 @@ async function getIgnorePathRe(str) {
         let temp = new Object();
         temp.re = new RegExp((await reParse(item)), "igm");
         temp.fullIgnore = m.has(item);
+        core.info(temp.toString());
         ans_re.push(temp);
         // ans_re.push({
         //     fullIgnore: m.has(item),
