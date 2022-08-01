@@ -207,13 +207,12 @@ function ignoreCheck(igRes, str) {
         return false;
     }
     for (let index = 0; index < igRes.length; index++) {
-        let { re, fullIgnore } = igRes[index];
+        const { re, fullIgnore } = igRes[index];
         if (re.test(str)) {
-            if (fullIgnore == true || re.lastIndex == str.length) {
+            if (fullIgnore || re.lastIndex == str.length) {
                 return true;
             }
         }
-        re.lastIndex = 0;
     }
     return false;
 }
