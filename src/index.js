@@ -48,7 +48,11 @@ async function getPaths(repo, owner, num) {
 
     const igRes = await getIgnorePathRe(ignoreStr);
 
-    if (ignoreStr != "") {
+    if (igRes === null) {
+        core.info("Ignore ALL paths!!!!!!!!!!!!!!");
+        return ""
+    }
+    if (ignoreStr !== undefined) {
         core.info("--------------------The ignore paths--------------------");
     }
 
@@ -135,49 +139,76 @@ async function reParse(str) {
 
 async function getIgnorePathRe(str) {
     if (str == "") {
-        return null
+        return undefined
     }
     let ans = new Set();
+    let ignore_set = new Set();
     let t = "";
     for (let index = 1; index < str.length - 1; index++) {
         const e = str[index];
         if (e == ",") {
-            if (t != '/') {
-                if (t.length >= 1) {
+            if (t.length >= 1) {
+                if (t != "/") {
                     if (t[t.length - 1] == '/') {
                         t = t.substring(0, t.length - 1);
+                        if (t == '/') {
+                            return null;
+                        }
+                        ignore_set.add(t);
                     }
                     ans.add(t);
+                } else {
+                    ignoreRoot = true;
                 }
-            } else {
-                ignoreRoot = true;
             }
             t = "";
         } else {
             t += e;
         }
     }
-    if (t != "") {
-        ans.add(t);
+    if (t.length >= 1) {
+        if (t != "/") {
+            if (t[t.length - 1] == '/') {
+                t = t.substring(0, t.length - 1);
+                if (t == '/') {
+                    return null;
+                }
+                ignore_set.add(t);
+            }
+            ans.add(t);
+        } else {
+            ignoreRoot = true;
+        }
     }
+
     if (ans.size == 0) {
-        return null
+        return undefined
     }
-    let ans_re = new Array();
+
+    let ans_re = [];
     for (let item of Array.from(ans)) {
-        ans_re.push(new RegExp((await reParse(item)), "igm"));
+        ans_re.push(
+            {
+                fullIgnore: ignore_set.has(item),
+                re: new RegExp((await reParse(item)), "igm"),
+            }
+        );
     }
+
     return ans_re;
 }
 
 function ignoreCheck(igRes, str) {
-    if (igRes == null) {
+    if (igRes === undefined) {
         return false;
     }
     for (let index = 0; index < igRes.length; index++) {
-        const re = igRes[index];
-        if (re.test(str) && re.lastIndex == str.length) {
-            return true;
+        let { re, fullIgnore } = igRes[index];
+        re.lastIndex = 0;
+        if (re.test(str)) {
+            if (fullIgnore || re.lastIndex == str.length) {
+                return true;
+            }
         }
     }
     return false;
