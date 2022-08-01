@@ -193,11 +193,11 @@ async function getIgnorePathRe(str) {
     core.info(Array.from(m));
 
     let ans_re = new Array();
-    for (let item of Array.from(ans)) {
+    for (let item of ans) {
         core.info(item);
         ans_re.push({
             re: new RegExp((await reParse(item)), "igm"),
-            fullIgnore: Boolean(m.get(item)),
+            fullIgnore: m.get(item),
         });
     }
 
