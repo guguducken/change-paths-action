@@ -52,10 +52,6 @@ async function getPaths(repo, owner, num) {
         core.info("Ignore ALL paths!!!!!!!!!!!!!!");
         return ""
     }
-
-    for (const it_t of igRes) {
-        core.info(it_t.re.toString() + it_t.fullIgnore);
-    }
     if (ignoreStr !== undefined) {
         core.info("--------------------The ignore paths--------------------");
     }
@@ -206,14 +202,14 @@ function ignoreCheck(igRes, str) {
     if (igRes === undefined) {
         return false;
     }
+    for (const it_t of igRes) {
+        core.info(it_t.re.toString() + " " + it_t.fullIgnore);
+    }
     for (let index = 0; index < igRes.length; index++) {
         const { re, fullIgnore } = igRes[index];
         if (re.test(str)) {
-            if (fullIgnore) {
+            if (fullIgnore || re.lastIndex == str.length) {
                 return true;
-            }
-            if (re.lastIndex == str.length) {
-                return true
             }
         }
     }
