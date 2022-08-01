@@ -155,9 +155,9 @@ async function getIgnorePathRe(str) {
                         if (t == '/') {
                             return null;
                         }
-                        m.set(t, true);
+                        m.set(t, 1);
                     } else {
-                        m.set(t, false);
+                        m.set(t, 0);
                     }
                     ans.add(t);
                 } else {
@@ -176,9 +176,9 @@ async function getIgnorePathRe(str) {
                 if (t == '/') {
                     return null;
                 }
-                m.set(t, true);
+                m.set(t, 1);
             } else {
-                m.set(t, false);
+                m.set(t, 0);
             }
             ans.add(t);
         } else {
@@ -214,7 +214,7 @@ function ignoreCheck(igRes, str) {
     for (let index = 0; index < igRes.length; index++) {
         let { re, fullIgnore } = igRes[index];
         if (re.test(str)) {
-            if (fullIgnore || re.lastIndex == str.length) {
+            if (fullIgnore == 1 || re.lastIndex == str.length) {
                 return true;
             }
         }
