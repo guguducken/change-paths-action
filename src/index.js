@@ -138,7 +138,7 @@ async function reParse(str) {
     return ans
 }
 
-function getIgnorePathRe(str) {
+async function getIgnorePathRe(str) {
     if (str == "") {
         return undefined
     }
