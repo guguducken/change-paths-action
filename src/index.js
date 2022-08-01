@@ -213,6 +213,7 @@ function ignoreCheck(igRes, str) {
                 return true;
             }
         }
+        re.lastIndex = 0;
     }
     return false;
 }
