@@ -205,7 +205,7 @@ function ignoreCheck(igRes, str) {
         return false;
     }
     for (let index = 0; index < igRes.length; index++) {
-        let { re, full } = igRes[index];
+        let { re, fullIgnore } = igRes[index];
         if (re.test(str)) {
             if (fullIgnore || re.lastIndex == str.length) {
                 return true;
