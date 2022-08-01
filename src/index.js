@@ -202,11 +202,9 @@ function ignoreCheck(igRes, str) {
     if (igRes === undefined) {
         return false;
     }
-    for (const it_t of igRes) {
-        core.info(it_t.re.toString() + " " + it_t.re.lastIndex);
-    }
     for (let index = 0; index < igRes.length; index++) {
-        const { re, fullIgnore } = igRes[index];
+        let { re, fullIgnore } = igRes[index];
+        re.lastIndex = 0;
         if (re.test(str)) {
             if (fullIgnore || re.lastIndex == str.length) {
                 return true;
