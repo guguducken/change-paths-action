@@ -21,3 +21,6 @@ outputs:
 runs:
   using: 'node16'
   main: 'src/index.js'
+branding:
+  icon: "arrow-down"
+  color: "blue"
