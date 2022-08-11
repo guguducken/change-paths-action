@@ -39,14 +39,18 @@ github.com/user_test/test/
 
 You can use `/` to ignore the `root` directory. If you use it, the action will not output `github.com/user_test/test`.
 
-You alse can use `github.com/user_test/test/src` or `test/src/ut/` or `/test/src/ut` to ignore `github.com/user_test/test/src` directory. If you use it, the action will not output `github.com/user_test/test/src.`
+You also can use `//` to ignore all directories.
+
+You can use `src/ut` to ignore `github.com/user_test/test/src/ut` directory. If you use it, the action will not output `github.com/user_test/test/src/ut`
+
+If you use `src/ut/`, the action will not output `github.com/user_test/test/src/ut` and all subdirectories.
 
 `warning`: If the corresponding ignore rule is not set, the subdirectory will still be output.
 
 For example: 
 
 - The paths of modified files: `github.com/user_test/test`,` github.com/user_test/test/src`,`github.com/user_test/test/src/ut`
-- The ignore rules: `"/,github.com/user_test/test/src"`
+- The ignore rules: `"/,src"`
 - The final output paths: `github.com/user_test/test/src/ut`
 
 ### Outputs
@@ -80,7 +84,7 @@ jobs:
 
     steps:
       - name: Get Changed Paths
-        uses: guguducken/ut-pr-action@master
+        uses: guguducken/ut-pr-action@v0.0.4
         id: paths-pr
         with:
           github-token: ${{ secrets.YOUR_TOKEN }}
