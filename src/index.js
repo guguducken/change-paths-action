@@ -46,7 +46,7 @@ async function getPaths(repo, owner, num) {
         res = re.exec(str);
     }
 
-    const igRes = await getIgnorePathRe(ignoreStr);
+    const igRes = await getIgnorePathRe(ignoreStr, repo, owner);
 
     if (igRes === null) {
         core.info("Ignore ALL paths!!!!!!!!!!!!!!");
@@ -137,10 +137,11 @@ async function reParse(str) {
     return ans
 }
 
-async function getIgnorePathRe(str) {
+async function getIgnorePathRe(str, repo, owner) {
     if (str == "") {
         return undefined
     }
+    let front = "github.com/" + owner + "/" + repo + "/";
     let ans = new Set();
     let ignore_set = new Set();
     let t = "";
@@ -154,9 +155,9 @@ async function getIgnorePathRe(str) {
                         if (t == '/') {
                             return null;
                         }
-                        ignore_set.add(t);
+                        ignore_set.add(front + t);
                     }
-                    ans.add(t);
+                    ans.add(front + t);
                 } else {
                     ignoreRoot = true;
                 }
@@ -173,9 +174,9 @@ async function getIgnorePathRe(str) {
                 if (t == '/') {
                     return null;
                 }
-                ignore_set.add(t);
+                ignore_set.add(front + t);
             }
-            ans.add(t);
+            ans.add(front + t);
         } else {
             ignoreRoot = true;
         }
