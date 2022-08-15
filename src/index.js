@@ -208,8 +208,8 @@ async function run() {
         const num = context.payload?.pull_request?.number;
         const owner = context.repo.owner;
         const repo = context.repo.repo;
-        core.info(`The repository name is: ` + repo);
-        core.info(`The owner of this repository is: ` + owner);
+        core.info(`The origin repository name is: ` + repo);
+        core.info(`The owner of origin repository is: ` + owner);
 
         if (num == undefined) {
             core.info(`This is no workflow with PR create`)
@@ -218,12 +218,15 @@ async function run() {
         }
         core.info(`The target pull request id is: ` + num);
 
-        let path_ans = await getPaths(repo, owner, num);
-        core.setOutput('paths', path_ans.substring(0, path_ans.length));
-
         let [sourceRepo, sourceBranch] = await getSourceOwner(repo, owner, num);
         core.setOutput('resource', sourceRepo);
         core.setOutput('branch', sourceBranch);
+        core.info("The repository which need to checkout is: " + sourceRepo);
+        core.info("The ref name which need to checkout is: " + sourceBranch);
+
+        let path_ans = await getPaths(repo, owner, num);
+        core.setOutput('paths', path_ans.substring(0, path_ans.length));
+
         core.info("-------------------- End find paths --------------------");
     } catch (err) {
         core.setFailed(err.message);
