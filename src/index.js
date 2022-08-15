@@ -95,32 +95,16 @@ async function getPaths(repo, owner, num) {
 }
 
 async function getSourceOwner(repo, owner, num) {
-    let source = await graphqlWithAuth(
-        `
-            query prSource($owner_name: String!, $repo_name: String!,$id_pr: Int!){
-                repository(name: $repo_name, owner: $owner_name) {
-                    pullRequest(number: $id_pr) {
-                        author {
-                            login
-                        }
-                        headRefName
-                    }
-                }
-            }
-        `,
+    let oc = github.getOctokit(accessToken);
+    const { data: pr } = await oc.rest.pulls.get(
         {
-            repo_name: repo,
-            owner_name: owner,
-            id_pr: num,
-
-        });
-    const str = JSON.stringify(source);
-
-    const re = /\{"login":"(.+?)"\}/igm;
-
-    const re1 = /"headRefName":"(.+?)"/igm;
-
-    return [re.exec(str)[1] + `/` + repo, re1.exec(str)[1]];
+            owner: owner,
+            repo: repo,
+            pull_number: prNum,
+        }
+    )
+    const { head } = pr;
+    return [head.repo.full_name, head.ref];
 }
 
 async function reParse(str) {
