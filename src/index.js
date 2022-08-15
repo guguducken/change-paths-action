@@ -100,7 +100,7 @@ async function getSourceOwner(repo, owner, num) {
         {
             owner: owner,
             repo: repo,
-            pull_number: prNum,
+            pull_number: num,
         }
     )
     const { head } = pr;
