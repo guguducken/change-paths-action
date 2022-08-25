@@ -9,14 +9,15 @@ inputs:
   ignore:
     description: 'The ignore path in this PR'
     default: ""
+    required: false
+  source-path: 
+    description: 'The source path in this PR'
+    default: ""
+    required: false
 
 outputs:
   paths:
     description: 'The paths of this PR changed'
-  resource:
-    description: 'The source repository of this PR'
-  branch:
-    description: 'The branch of this PR'
 
 runs:
   using: 'node16'

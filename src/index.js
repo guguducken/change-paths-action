@@ -1,52 +1,64 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
-const { graphql } = require("@octokit/graphql");
 
 const accessToken = core.getInput('github-token');
-const ignoreStr = JSON.stringify(core.getInput('ignore'));
+const ignoreStr = core.getInput('ignore');
+const path_source = core.getInput('source-path');
 
-const graphqlWithAuth = graphql.defaults({
-    headers: {
-        authorization: `bearer ` + accessToken,
-    },
-});
+const oc = github.getOctokit(accessToken);
 
 let ignoreRoot = false;
 
-async function getPaths(repo, owner, num) {
-    let paths_pr = await graphqlWithAuth(
-        `
-            query prPaths($owner_name: String!, $repo_name: String!,$id_pr: Int!, $lnum: Int = 100){
-                repository(name: $repo_name, owner: $owner_name) {
-                    pullRequest(number: $id_pr) {
-                        files(first: $lnum) {
-                            edges {
-                                node {
-                                    path
-                                }
-                            }
-                        }
-                    }
-                }
+async function getSourcePaths() {
+    if (path_source.length == 0) {
+        return null;
+    }
+    let t = "";
+    let package_go = new Array();
+    for (let i = 0; i < path_source.length; i++) {
+        const e = path_source[i];
+        if (e == " ") {
+            if (t.length != 0) {
+                package_go.push(t);
+                t = "";
             }
-        `,
+        } else {
+            t += e;
+        }
+    }
+    if (t.length != 0``) {
+        package_go.push(t);
+    }
+    return package_go;
+}
+
+function sourceCheck(sourceRes, t) {
+    if (sourceRes.length === null) {
+        return true;
+    }
+    for (const re of sourceRes) {
+        if (re == t) {
+            return true;
+        }
+    }
+    return false;
+}
+
+async function getPaths(repo, owner, num) {
+
+    let path_re = new Array();
+    const { data: paths } = await oc.rest.pulls.listFiles(
         {
-            repo_name: repo,
-            owner_name: owner,
-            id_pr: num,
-
-        });
-    const str = JSON.stringify(paths_pr)
-
-    const re = /\{"path":"(.+?)"\}\}/igm;
-    let path_re = [];
-    let res = re.exec(str);
-    while (res) {
-        path_re.push(res[1]);
-        res = re.exec(str);
+            ...github.context.repo,
+            pull_number: num
+        }
+    );
+    for (const path of paths) {
+        path_re.push(path.filename);
     }
 
     const igRes = await getIgnorePathRe(ignoreStr, repo, owner);
+    const sourceRes = await getSourcePaths();
 
     if (igRes === null) {
         core.info("Ignore ALL paths!!!!!!!!!!!!!!");
@@ -72,11 +84,11 @@ async function getPaths(repo, owner, num) {
         }
         if (i != -1) {
             let t = `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i);
-            if (ignoreCheck(igRes, t)) {
-                core.info("Ignore path: " + t);
+            if (!ignoreCheck(igRes, t) && sourceCheck(sourceRes, t)) {
+                paths_set.add(t);
                 continue
             }
-            paths_set.add(t);
+            core.info("Ignore path: " + t);
         } else {
             if (!ignoreRoot) {
                 paths_set.add(`github.com` + `/` + owner + `/` + repo);
@@ -90,21 +102,7 @@ async function getPaths(repo, owner, num) {
     }
     let path_ans = Array.from(paths_set).join(" ");
 
-
     return path_ans
-}
-
-async function getSourceOwner(repo, owner, num) {
-    let oc = github.getOctokit(accessToken);
-    const { data: pr } = await oc.rest.pulls.get(
-        {
-            owner: owner,
-            repo: repo,
-            pull_number: num,
-        }
-    )
-    const { head } = pr;
-    return [head.repo.full_name, head.ref];
 }
 
 async function reParse(str) {
@@ -217,12 +215,6 @@ async function run() {
             return
         }
         core.info(`The target pull request id is: ` + num);
-
-        let [sourceRepo, sourceBranch] = await getSourceOwner(repo, owner, num);
-        core.setOutput('resource', sourceRepo);
-        core.setOutput('branch', sourceBranch);
-        core.info("The repository which need to checkout is: " + sourceRepo);
-        core.info("The ref name which need to checkout is: " + sourceBranch);
 
         let path_ans = await getPaths(repo, owner, num);
         core.setOutput('paths', path_ans.substring(0, path_ans.length));
