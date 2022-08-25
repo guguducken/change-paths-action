@@ -127,7 +127,7 @@ async function getIgnorePathRe(str, repo, owner) {
     let ans = new Set();
     let ignore_set = new Set();
     let t = "";
-    for (let index = 1; index < str.length - 1; index++) {
+    for (let index = 0; index < str.length; index++) {
         const e = str[index];
         if (e == ",") {
             if (t.length >= 1) {
