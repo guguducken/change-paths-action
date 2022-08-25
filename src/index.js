@@ -26,7 +26,7 @@ async function getSourcePaths() {
             t += e;
         }
     }
-    if (t.length != ``) {
+    if (t.length != 0) {
         package_go.push(t);
     }
     return package_go;
