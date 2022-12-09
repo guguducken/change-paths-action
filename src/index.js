@@ -112,7 +112,7 @@ async function getPaths(repo, owner, num) {
         core.info("Goal path: " + it);
     }
     let path_ans = Array.from(paths_set).join(" ");
-    let file_ans = Array.from(files_set).join("\|");
+    let file_ans = Array.from(files_set).join("\\|");
 
     return { paths: path_ans, files: file_ans }
 }
