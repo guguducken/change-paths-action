@@ -217,8 +217,8 @@ async function run() {
         // const num = context.payload?.pull_request?.number;
         // const owner = context.repo.owner;
         // const repo = context.repo.repo;
-        core.info(`The origin repository name is: ` + repo);
-        core.info(`The owner of origin repository is: ` + owner);
+        core.info(`The origin repository name is: ` + in_repo);
+        core.info(`The owner of origin repository is: ` + in_owner);
 
         if (num == undefined) {
             core.info(`This is no workflow with PR create`)
