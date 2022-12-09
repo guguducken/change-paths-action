@@ -84,13 +84,12 @@ async function getPaths(repo, owner, num) {
             }
         }
         if (i != -1) {
-            // let path = `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i);
-            // let file = `github.com` + `/` + owner + `/` + repo + `/` + element;
+
             let path = `github.com/${owner}/${repo}/${element.substring(0, i)}`;
             let file = `github.com/${owner}/${repo}/${element}`;
             if (!ignoreCheck(igRes, path) && sourceCheck(sourceRes, path)) {
                 paths_set.add(path);
-                files_set.add(file)
+                files_set.add(file);
                 continue
             }
             core.info("Ignore path: " + path);
@@ -107,7 +106,7 @@ async function getPaths(repo, owner, num) {
         core.info("Goal path: " + it);
     }
     let path_ans = Array.from(paths_set).join(" ");
-    let file_ans = Array.from(files_set).join("\|");
+    let file_ans = Array.from(files_set).join("\\|");
 
     return { paths: path_ans, files: file_ans }
 }
@@ -216,7 +215,7 @@ async function run() {
         core.info(`The origin repository name is: ` + repo);
         core.info(`The owner of origin repository is: ` + owner);
 
-        if (num == undefined) {
+        if (num === undefined) {
             core.info(`This is no workflow with PR create`)
             core.info("-------------------- End find paths --------------------");
             return
@@ -226,6 +225,7 @@ async function run() {
         let { paths, files } = await getPaths(repo, owner, num);
         core.setOutput('paths', paths);
         core.setOutput('files', files);
+
 
         core.info("-------------------- End find paths --------------------");
     } catch (err) {
