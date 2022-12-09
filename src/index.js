@@ -74,6 +74,7 @@ async function getPaths(repo, owner, num) {
     }
 
     let paths_set = new Set();
+    let files_set = new Set();
     for (let index = 0; index < path_re.length; index++) {
         let element = path_re[index];
         let i = element.length - 1;
@@ -83,15 +84,20 @@ async function getPaths(repo, owner, num) {
             }
         }
         if (i != -1) {
-            let t = `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i);
-            if (!ignoreCheck(igRes, t) && sourceCheck(sourceRes, t)) {
-                paths_set.add(t);
+            // let path = `github.com` + `/` + owner + `/` + repo + `/` + element.substring(0, i);
+            // let file = `github.com` + `/` + owner + `/` + repo + `/` + element;
+            let path = `github.com/${owner}/${repo}/${element.substring(0, i)}`;
+            let file = `github.com/${owner}/${repo}/${element}`;
+            if (!ignoreCheck(igRes, path) && sourceCheck(sourceRes, path)) {
+                paths_set.add(path);
+                files_set.add(file)
                 continue
             }
-            core.info("Ignore path: " + t);
+            core.info("Ignore path: " + path);
         } else {
             if (!ignoreRoot) {
-                paths_set.add(`github.com` + `/` + owner + `/` + repo);
+                paths_set.add(`github.com/${owner}/${repo}`);
+                files_set.add(`github.com/${owner}/${repo}/${element}`)
             }
         }
     }
@@ -101,8 +107,9 @@ async function getPaths(repo, owner, num) {
         core.info("Goal path: " + it);
     }
     let path_ans = Array.from(paths_set).join(" ");
+    let file_ans = Array.from(files_set).join("\|");
 
-    return path_ans
+    return { paths: path_ans, files: file_ans }
 }
 
 async function reParse(str) {
@@ -216,8 +223,9 @@ async function run() {
         }
         core.info(`The target pull request id is: ` + num);
 
-        let path_ans = await getPaths(repo, owner, num);
-        core.setOutput('paths', path_ans.substring(0, path_ans.length));
+        let { paths, files } = await getPaths(repo, owner, num);
+        core.setOutput('paths', paths);
+        core.setOutput('files', files);
 
         core.info("-------------------- End find paths --------------------");
     } catch (err) {
