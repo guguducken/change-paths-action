@@ -225,7 +225,7 @@ async function run() {
             core.info("-------------------- End find paths --------------------");
             return
         }
-        core.info(`The target pull request id is: ` + num);
+        core.info(`The target pull request id is: ` + in_number);
 
         let { paths, files } = await getPaths(in_repo, in_owner, in_number);
         core.setOutput('paths', paths);
