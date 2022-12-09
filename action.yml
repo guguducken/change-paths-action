@@ -18,6 +18,8 @@ inputs:
 outputs:
   paths:
     description: 'The paths of this PR changed'
+  files:
+    description: 'The files of this PR changed'
 
 runs:
   using: 'node16'
