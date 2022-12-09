@@ -220,7 +220,7 @@ async function run() {
         core.info(`The origin repository name is: ` + in_repo);
         core.info(`The owner of origin repository is: ` + in_owner);
 
-        if (num == undefined) {
+        if (in_number == undefined) {
             core.info(`This is no workflow with PR create`)
             core.info("-------------------- End find paths --------------------");
             return
