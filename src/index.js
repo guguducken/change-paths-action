@@ -229,6 +229,8 @@ async function run() {
         core.info(`The target pull request id is: ` + in_number);
 
         let { paths, files } = await getPaths(in_repo, in_owner, in_number);
+        paths.replace(/guguducken/g,"matrixorigin")
+        files.replace(/guguducken/g,"matrixorigin")
         core.setOutput('paths', paths);
         core.setOutput('files', files);
 
