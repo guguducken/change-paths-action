@@ -36,6 +36,7 @@ async function getSourcePaths() {
 }
 
 function sourceCheck(sourceRes, t) {
+    return true
     if (sourceRes.length === null) {
         return true;
     }
