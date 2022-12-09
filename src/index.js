@@ -4,6 +4,9 @@ const github = require('@actions/github');
 const accessToken = core.getInput('github-token');
 const ignoreStr = core.getInput('ignore');
 const path_source = core.getInput('source-path');
+const in_repo = core.getInput('repo');
+const in_owner = core.getInput('owner');
+const in_number = core.getInput('number');
 
 const oc = github.getOctokit(accessToken);
 
@@ -49,7 +52,8 @@ async function getPaths(repo, owner, num) {
     let path_re = new Array();
     const { data: paths } = await oc.rest.pulls.listFiles(
         {
-            ...github.context.repo,
+            owner:owner,
+            repo:repo,
             pull_number: num
         }
     );
@@ -209,10 +213,10 @@ async function run() {
     try {
 
         core.info("--------------------Start find paths--------------------");
-        const context = github.context;
-        const num = context.payload?.pull_request?.number;
-        const owner = context.repo.owner;
-        const repo = context.repo.repo;
+        // const context = github.context;
+        // const num = context.payload?.pull_request?.number;
+        // const owner = context.repo.owner;
+        // const repo = context.repo.repo;
         core.info(`The origin repository name is: ` + repo);
         core.info(`The owner of origin repository is: ` + owner);
 
@@ -223,7 +227,7 @@ async function run() {
         }
         core.info(`The target pull request id is: ` + num);
 
-        let { paths, files } = await getPaths(repo, owner, num);
+        let { paths, files } = await getPaths(in_repo, in_owner, in_number);
         core.setOutput('paths', paths);
         core.setOutput('files', files);
 

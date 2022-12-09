@@ -4,26 +4,35 @@ author: guguducken
 
 inputs:
   github-token:
-    description: 'The user GitHub token for get data'
+    description: "The user GitHub token for get data"
     required: true
   ignore:
-    description: 'The ignore path in this PR'
+    description: "The ignore path in this PR"
     default: ""
     required: false
-  source-path: 
-    description: 'The source path in this PR'
+  source-path:
+    description: "The source path in this PR"
     default: ""
     required: false
+  repo:
+    description: "test"
+    required: true
+  owner:
+    description: "test"
+    required: true
+  number:
+    description: "test"
+    required: true
 
 outputs:
   paths:
-    description: 'The paths of this PR changed'
+    description: "The paths of this PR changed"
   files:
-    description: 'The files of this PR changed'
+    description: "The files of this PR changed"
 
 runs:
-  using: 'node16'
-  main: 'src/index.js'
+  using: "node16"
+  main: "src/index.js"
 branding:
   icon: "arrow-down"
   color: "blue"
