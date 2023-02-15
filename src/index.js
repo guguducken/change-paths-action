@@ -54,8 +54,7 @@ async function getPaths(repo, owner, num) {
     let path_re = new Array();
     const { data: paths } = await oc.rest.pulls.listFiles(
         {
-            repo:repo,
-            owner: owner,
+            ...github.context.repo,
             pull_number: num
         }
     );
