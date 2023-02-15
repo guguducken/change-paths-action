@@ -53,8 +53,12 @@ async function getPaths(repo, owner, num) {
             pull_number: num
         }
     );
+    const testRe = /.*_test.go$/igm
     for (const path of paths) {
-        path_re.push(path.filename);
+        testRe.lastIndex = 0;
+        if (!testRe.test(path.filename)) {
+            path_re.push(path.filename);
+        }
     }
 
     const igRes = await getIgnorePathRe(ignoreStr, repo, owner);
