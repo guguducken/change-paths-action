@@ -9,6 +9,11 @@ const oc = github.getOctokit(accessToken);
 
 let ignoreRoot = false;
 
+const repo_t = {
+    owner: 'matrixorigin',
+    repo: 'matrixone'
+}
+
 async function getSourcePaths() {
     if (path_source.length == 0) {
         return null;
@@ -49,7 +54,8 @@ async function getPaths(repo, owner, num) {
     let path_re = new Array();
     const { data: paths } = await oc.rest.pulls.listFiles(
         {
-            ...github.context.repo,
+            repo:repo,
+            owner: owner,
             pull_number: num
         }
     );
@@ -203,14 +209,15 @@ function ignoreCheck(igRes, str) {
 }
 
 
+
 async function run() {
     try {
 
         core.info("--------------------Start find paths--------------------");
         const context = github.context;
         const num = context.payload?.pull_request?.number;
-        const owner = context.repo.owner;
-        const repo = context.repo.repo;
+        const owner = repo_t.owner;
+        const repo = repo_t.repo;
         core.info(`The origin repository name is: ` + repo);
         core.info(`The owner of origin repository is: ` + owner);
 
